@@ -37,9 +37,7 @@ default_gems = [
     # ['fcntl', '1.0.1'],
     ['ffi', '1.16.3'],
     ['fileutils', '1.7.2'],
-    # This version is accurate, but fiddle install needs mkmf which needs fileutils. We can't install it independently
-    # at build time, so instead we continue to version the files and will work out the build sequence separately.
-    #['fiddle', '1.1.3'],
+    ['fiddle', '1.1.4'],
     ['find', '0.2.0'],
     ['forwardable', '1.3.3'],
     ['io-console', '0.7.2'],
