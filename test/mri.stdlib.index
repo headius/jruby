@@ -25,6 +25,7 @@ rdoc
 reline
 resolv
 ripper
+set
 socket
 stringio
 strscan

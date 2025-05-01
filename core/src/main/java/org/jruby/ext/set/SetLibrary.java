@@ -45,6 +45,5 @@ public final class SetLibrary implements Library {
         var Object = objectClass(context);
         var Enumerable = enumerableModule(context).defineMethods(context, EnumerableExt.class);
         var Set = RubySet.createSetClass(context, Object, Enumerable);
-        RubySortedSet.createSortedSetClass(context, Set);
     }
 }

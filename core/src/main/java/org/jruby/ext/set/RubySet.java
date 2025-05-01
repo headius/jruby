@@ -32,6 +32,7 @@ package org.jruby.ext.set;
 import org.jcodings.specific.USASCIIEncoding;
 import org.jruby.*;
 import org.jruby.RubyEnumerator.SizeFn;
+import org.jruby.anno.JRubyField;
 import org.jruby.anno.JRubyMethod;
 import org.jruby.api.Access;
 import org.jruby.javasupport.JavaUtil;
@@ -44,6 +45,7 @@ import org.jruby.util.io.RubyInputStream;
 import org.jruby.util.io.RubyOutputStream;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -74,8 +76,9 @@ public class RubySet extends RubyObject implements Set {
     static RubyClass createSetClass(ThreadContext context, RubyClass Object, RubyModule Enumerable) {
         RubyClass Set = defineClass(context, "Set", Object, RubySet::new).
                 reifiedClass(RubySet.class).
-                include(context, Enumerable).
                 defineMethods(context, RubySet.class).
+                defineFields(context, RubySet.class, MethodHandles.lookup()).
+                include(context, Enumerable).
                 tap(c -> c.marshalWith(new SetMarshal(c.getMarshal())));
 
         loadService(context).require("jruby/set.rb");
@@ -105,24 +108,17 @@ public class RubySet extends RubyObject implements Set {
         @Deprecated(since = "10.0", forRemoval = true)
         @SuppressWarnings("removal")
         public Object unmarshalFrom(Ruby runtime, RubyClass type, org.jruby.runtime.marshal.UnmarshalStream unmarshalStream) throws IOException {
-            Object result = defaultMarshal.unmarshalFrom(runtime, type, unmarshalStream);
-            ((RubySet) result).unmarshal();
-            return result;
+            return defaultMarshal.unmarshalFrom(runtime, type, unmarshalStream);
         }
 
         public Object unmarshalFrom(ThreadContext context, RubyInputStream in, RubyClass type, MarshalLoader loader) {
-            Object result = defaultMarshal.unmarshalFrom(context, in, type, loader);
-            ((RubySet) result).unmarshal();
-            return result;
+            return defaultMarshal.unmarshalFrom(context, in, type, loader);
         }
 
     }
 
-    void unmarshal() {
-        this.hash = (RubyHash) getInstanceVariable("@hash");
-    }
-
-    RubyHash hash; // @hash
+    @JRubyField("@hash")
+    RubyHash hash;
 
     protected RubySet(Ruby runtime, RubyClass klass) {
         super(runtime, klass);
@@ -151,7 +147,6 @@ public class RubySet extends RubyObject implements Set {
 
     final void setHash(final RubyHash hash) {
         this.hash = hash;
-        setInstanceVariable("@hash", hash); // MRI compat with set.rb
     }
 
     /**
@@ -281,18 +276,6 @@ public class RubySet extends RubyObject implements Set {
         }
 
         throw argumentError(context, "value must be enumerable");
-    }
-
-    // YAML doesn't have proper treatment for Set serialization, it dumps it just like
-    // any Ruby object, meaning on YAML.load will allocate an "initialize" all i-vars!
-    @Override
-    public IRubyObject instance_variable_set(IRubyObject name, IRubyObject value) {
-        if (getRuntime().newSymbol("@hash").equals(name)) {
-            if (value instanceof RubyHash) {
-                setHash((RubyHash) value); return value;
-            }
-        }
-        return super.instance_variable_set(name, value);
     }
 
     IRubyObject invokeAdd(final ThreadContext context, final IRubyObject val) {
