@@ -46,7 +46,8 @@ public enum OperandType {
     FILENAME("file", (byte) 'm'),
     SYMBOL_PROC("symproc", (byte) 'P'),
     SCOPE("scope", (byte) '#'),
-    CHILLED_STRING("chilled", (byte) 'c');
+    CHILLED_STRING("chilled", (byte) 'c'),
+    LONGARRAY("longarray", (byte) 'y');
 
     private final String shortName;
     private final byte coded;

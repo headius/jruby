@@ -171,6 +171,7 @@ public abstract class IRVisitor {
     public void Bignum(Bignum bignum) { error(bignum); }
     public void Boolean(Boolean bool) { error(bool); }
     public void BuiltinClass(BuiltinClass builtinClass) { error(builtinClass); }
+    public void ByteArray(FixnumArray fixnumarray) { error(fixnumarray); }
     public void UnboxedBoolean(UnboxedBoolean bool) { error(bool); }
     public void ChilledString(ChilledString chilledString) { error(chilledString); }
     public void ClosureLocalVariable(ClosureLocalVariable closurelocalvariable) { error(closurelocalvariable); }

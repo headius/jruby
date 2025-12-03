@@ -203,6 +203,16 @@ public class IRReaderStream implements IRReaderDecoder, IRPersistenceValues {
         return ints;
     }
 
+    @Override
+    public long[] decodeLongArray() {
+        int size = decodeInt();
+        long[] longs = new long[size];
+        for (int i = 0; i < size; i++) {
+            longs[i] = decodeLong();
+        }
+        return longs;
+    }
+
     private Map<String, Operand> vars = null;
 
     // Labels use this to make sure they share the same instances
@@ -518,6 +528,7 @@ public class IRReaderStream implements IRReaderDecoder, IRPersistenceValues {
             case BIGNUM: return Bignum.decode(this);
             case BOOLEAN: return org.jruby.ir.operands.Boolean.decode(this);
             case BUILTIN_CLASS: return BuiltinClass.decode(this);
+            case LONGARRAY: return FixnumArray.decode(this);
             case CHILLED_STRING: return ChilledString.decode(this);
             case COMPLEX: return Complex.decode(this);
             case CURRENT_SCOPE: return CurrentScope.decode(this);

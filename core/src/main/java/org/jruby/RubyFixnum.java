@@ -260,7 +260,7 @@ public class RubyFixnum extends RubyInteger implements Constantizable, Appendabl
         return newFixnum(runtime, (long) value);
     }
 
-    private static boolean isInCacheRange(long value) {
+    public static boolean isInCacheRange(long value) {
         return value <= CACHE_OFFSET - 1 && value >= -CACHE_OFFSET;
     }
 

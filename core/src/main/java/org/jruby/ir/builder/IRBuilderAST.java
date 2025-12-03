@@ -11,7 +11,6 @@ import org.jruby.RubySymbol;
 import org.jruby.ast.*;
 import org.jruby.ast.types.ILiteralNode;
 import org.jruby.ast.types.INameNode;
-import org.jruby.common.IRubyWarnings;
 import org.jruby.compiler.NotCompilableException;
 import org.jruby.ir.IRClosure;
 import org.jruby.ir.IRFor;
@@ -27,9 +26,11 @@ import org.jruby.ir.instructions.defined.RestoreErrorInfoInstr;
 import org.jruby.ir.interpreter.InterpreterContext;
 import org.jruby.ir.operands.Array;
 import org.jruby.ir.operands.Bignum;
+import org.jruby.ir.operands.FixnumArray;
 import org.jruby.ir.operands.ChilledString;
 import org.jruby.ir.operands.Complex;
 import org.jruby.ir.operands.Filename;
+import org.jruby.ir.operands.Fixnum;
 import org.jruby.ir.operands.Float;
 import org.jruby.ir.operands.FrozenString;
 import org.jruby.ir.operands.Hash;
@@ -791,8 +792,16 @@ public class IRBuilderAST extends IRBuilder<Node, DefNode, WhenNode, RescueBodyN
         Operand[] elts = new Operand[nodes.length];
         boolean containsAssignments = node.containsVariableAssignment();
         Operand keywordRestSplat = null;
+
+        long[] longs = new long[nodes.length];
+        boolean allCachedFixnums = true;
         for (int i = 0; i < nodes.length; i++) {
-            elts[i] = buildWithOrder(nodes[i], containsAssignments);
+            Operand operand = buildWithOrder(nodes[i], containsAssignments);
+            if (allCachedFixnums && operand instanceof Fixnum fixnum) {
+                longs[i] = fixnum.value;
+            } else allCachedFixnums = false;
+
+            elts[i] = operand;
             if (nodes[i] instanceof HashNode && ((HashNode) nodes[i]).hasOnlyRestKwargs()) keywordRestSplat = elts[i];
         }
 
@@ -809,6 +818,10 @@ public class IRBuilderAST extends IRBuilder<Node, DefNode, WhenNode, RescueBodyN
                     () -> copy(result, new Array(elts)));
             return result;
         } else {
+            if (allCachedFixnums) {
+                return new FixnumArray(longs);
+            }
+
             Operand array = new Array(elts);
             return operandOnly ? array : copy(array);
         }

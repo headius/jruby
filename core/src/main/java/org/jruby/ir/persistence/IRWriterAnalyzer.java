@@ -122,7 +122,10 @@ public class IRWriterAnalyzer implements IRWriterEncoder {
 
     @Override
     public void encode(int[] value) {
+    }
 
+    @Override
+    public void encode(long[] value) {
     }
 
     @Override

@@ -127,6 +127,14 @@ public class IRWriterStream implements IRWriterEncoder, IRPersistenceValues {
     }
 
     @Override
+    public void encode(long[] value) {
+        encode(value.length);
+        for (int i = 0; i < value.length; i++) {
+            encode(value[i]);
+        }
+    }
+
+    @Override
     public void encode(long value) {
         if (value >= 0 && value <= 127) {
             encode((byte) value);

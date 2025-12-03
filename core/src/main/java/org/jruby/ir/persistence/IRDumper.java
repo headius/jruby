@@ -18,6 +18,7 @@ import org.jruby.ir.interpreter.InterpreterContext;
 import org.jruby.ir.operands.Array;
 import org.jruby.ir.operands.Bignum;
 import org.jruby.ir.operands.BuiltinClass;
+import org.jruby.ir.operands.FixnumArray;
 import org.jruby.ir.operands.ChilledString;
 import org.jruby.ir.operands.ClosureLocalVariable;
 import org.jruby.ir.operands.Complex;
@@ -297,10 +298,10 @@ public class IRDumper extends IRVisitor {
     }
 
     public void Array(Array array) {
-        final boolean[] comma = {false};
+        boolean comma = false;
         for (Operand o : Arrays.asList(array.getElts())) {
-            if (comma[0]) print(", ");
-            comma[0] = true;
+            if (comma) print(", ");
+            comma = true;
 
             visit(o);
         }
@@ -308,6 +309,15 @@ public class IRDumper extends IRVisitor {
     public void Bignum(Bignum bignum) { print(bignum.value); }
     public void Boolean(org.jruby.ir.operands.Boolean bool) { print(bool.isTrue() ? "t" : "f"); }
     public void BuiltinClass(BuiltinClass builtinClass) { } // FIXME: need to print enum
+    public void ByteArray(FixnumArray fixnumarray) {
+        boolean comma = false;
+        for (long l : fixnumarray.longs) {
+            if (comma) print(",");
+            comma = true;
+
+            print(l);
+        }
+    }
     public void UnboxedBoolean(UnboxedBoolean bool) { print(bool.isTrue() ? "t" : "f"); }
     public void ChilledString(ChilledString chilled) { print(chilled.getByteList()); }
     public void ClosureLocalVariable(ClosureLocalVariable closurelocalvariable) { LocalVariable(closurelocalvariable); }

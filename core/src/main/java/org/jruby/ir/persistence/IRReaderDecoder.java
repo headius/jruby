@@ -50,6 +50,7 @@ public interface IRReaderDecoder {
     int decodeInt();
     int decodeIntRaw();
     long decodeLong();
+    long[] decodeLongArray();
     double decodeDouble();
     float decodeFloat();
     RubyEvent decodeRubyEvent();
