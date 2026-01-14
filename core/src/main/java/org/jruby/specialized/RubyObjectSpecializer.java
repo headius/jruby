@@ -193,7 +193,7 @@ public class RubyObjectSpecializer {
 
     private static JiteClass generateJiteClass(String clsPath, int size) {
         // ensure only one thread will attempt to generate and define the new class
-        final String baseName = p(RubyObject.class);
+        final String baseName = p(RubyObjectShape.class);
 
         final JiteClass jiteClass = new JiteClass(clsPath, baseName, new String[0]) {{
             for (int i = 0; i < size; i++) {
